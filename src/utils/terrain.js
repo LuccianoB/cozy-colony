@@ -1,6 +1,6 @@
 export const TERRAIN_TYPES = {
     desert: {
-      name: 'Desert',
+      name: 'desert',
       color: '#FFD449'
     },
     grassland: {

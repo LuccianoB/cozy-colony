@@ -84,7 +84,7 @@ export default function HexGrid() {
         {tiles.map(tile => {
           const { x, y } = getPixelPosition(tile.q, tile.r);
           const points = getHexPoints(x, y, HEX_SIZE);
-          const typeData = TERRAIN_TYPES[tile.type];
+          const typeData = TERRAIN_TYPES[tile.type] || {color: '#ccc'};
           const baseColor = Color(typeData.color);
           const fill = tile.id === selectedTileId
             ? baseColor.darken(0.3).hex()

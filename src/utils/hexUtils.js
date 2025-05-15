@@ -3,6 +3,9 @@
 * This module provides functions to generate a hexagonal grid and manipulate hex tiles.
 */
 import { TERRAIN_TYPES } from "./terrain";
+import { createNoise2D } from 'simplex-noise';
+
+
 export const generateHexGrid = generateHexGridRadius
 
 // Function to generate a random color from a predefined palette
@@ -35,19 +38,36 @@ export function generateRectangularHexGrid(width, height) {
 export function generateHexGridRadius(radius) {
     const tiles = [];
     const terrainKeys = Object.keys(TERRAIN_TYPES);
+    const noise2D = createNoise2D();
+    const noiseScale = 0.15; // Adjust this value to change the noise scale
 
     for (let q = -radius; q <= radius; q++) {
       for (let r = -radius; r <= radius; r++) {
         const s = -q - r;
         if (Math.abs(s) <= radius) {
-          const terrainType = terrainKeys[Math.floor(Math.random() * terrainKeys.length)];
+          const noiseValue = noise2D(q * noiseScale, r * noiseScale); //-1 to 1
+          const elevation = (noiseValue + 1) / 2; // Normalize to 0 to 1
+
+          let type;
+          if (elevation < 0.2) {
+            type = 'desert';
+          } else if (elevation < 0.4) {
+            type = 'grassland';
+          } else if (elevation < 0.6) {
+            type = 'forest';
+          } else if (elevation < 0.8) {
+            type = 'mountain';
+          } else {
+            type = 'peak';
+          }
 
           tiles.push({            
             id: `${q}_${r}`,
             q,
             r,
-            selected: false,
-            type: terrainType
+            type,
+            elevation,
+            selected: false
           });
         }
       }
