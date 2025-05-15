@@ -2,6 +2,7 @@
 * Hexagonal grid generation and manipulation functions.
 * This module provides functions to generate a hexagonal grid and manipulate hex tiles.
 */
+import { TERRAIN_TYPES } from "./terrain";
 export const generateHexGrid = generateHexGridRadius
 
 // Function to generate a random color from a predefined palette
@@ -33,17 +34,20 @@ export function generateRectangularHexGrid(width, height) {
 // Function to generate a hexagonal grid with a specified radius
 export function generateHexGridRadius(radius) {
     const tiles = [];
+    const terrainKeys = Object.keys(TERRAIN_TYPES);
+
     for (let q = -radius; q <= radius; q++) {
       for (let r = -radius; r <= radius; r++) {
         const s = -q - r;
         if (Math.abs(s) <= radius) {
-          tiles.push({
+          const terrainType = terrainKeys[Math.floor(Math.random() * terrainKeys.length)];
+
+          tiles.push({            
             id: `${q}_${r}`,
             q,
             r,
             selected: false,
-            type: null,
-            color: getRandomColor(), // Assign a random color to each tile
+            type: terrainType
           });
         }
       }

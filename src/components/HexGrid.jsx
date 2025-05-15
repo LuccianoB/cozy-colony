@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import Color from 'color';
 import { generateHexGrid, getHexPoints } from '../utils/hexUtils';
+import { TERRAIN_TYPES } from '../utils/terrain';
 
 const HEX_SIZE = 30;
 const HEX_WIDTH = HEX_SIZE * Math.sqrt(3);
@@ -83,12 +84,13 @@ export default function HexGrid() {
         {tiles.map(tile => {
           const { x, y } = getPixelPosition(tile.q, tile.r);
           const points = getHexPoints(x, y, HEX_SIZE);
-          const baseColor = Color(tile.color);
+          const typeData = TERRAIN_TYPES[tile.type];
+          const baseColor = Color(typeData.color);
           const fill = tile.id === selectedTileId
             ? baseColor.darken(0.3).hex()
             : tile.id === hoveredTileID
             ? baseColor.lighten(0.3).hex()
-            : tile.color;
+            : baseColor.hex();
 
           return (
             <polygon
@@ -96,7 +98,7 @@ export default function HexGrid() {
               points={points}
               fill={fill}
               stroke="#888"
-              strokeWidth={1}
+              strokeWidth={0.5}
               filter={tile.id === selectedTileId ? 'url(#glow)' : 'none'}
               onMouseEnter={() => setHoveredTileID(tile.id)}
               onMouseLeave={() => setHoveredTileID(null)}
