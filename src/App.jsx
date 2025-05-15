@@ -1,5 +1,6 @@
 import { generateHexGrid, getHexPoints } from './utils/hexUtils';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import Color from 'color';
 
 const HEX_SIZE = 30; // radius of hex
 const HEX_WIDTH = HEX_SIZE * Math.sqrt(3); // width of a hex
@@ -13,7 +14,7 @@ function App() {
   const [hoveredTileID, setHoveredTileID] = useState(null);
   const [selectedTileId, setSelectedTileId] = useState(null);
 
-  const tiles = generateHexGrid(HEX_RADIUS); 
+  const tiles = useMemo(() => generateHexGrid(HEX_RADIUS), []); 
 
   //get bounding box of all pixel positions
   const pixelPositions = tiles.map(tile => {
@@ -61,19 +62,23 @@ function App() {
       >
         <circle cx="500" cy="500" r="100" fill="red" />
         {tiles.map(tile => {
+          // get the pixel position of the tile
           const { x, y } = getPixelPosition(tile.q, tile.r);
           const points = getHexPoints(x, y, HEX_SIZE);
+
+          //get color of the tile
+          const baseColor = Color(tile.color);
+          const fill = tile.id === selectedTileId
+            ? baseColor.darken(0.2).hex() // darken the color when selected
+            : hoveredTileID && tile.id === hoveredTileID
+            ? baseColor.lighten(0.1).hex() // lighten the color when hovered
+            : baseColor.hex();
+
           return (
             <polygon
               key={tile.id}
               points={points}
-              fill={
-                tile.id === selectedTileId
-                  ? "#4ade80" //brighter 
-                  : hoveredTileID && tile.id === hoveredTileID
-                  ? "#bbf7d0"
-                  : "#DEF7E5"
-              }
+              fill={fill}
               stroke="#888"
               strokeWidth={1}
               onMouseEnter={() => setHoveredTileID(tile.id)}

@@ -2,8 +2,13 @@
 * Hexagonal grid generation and manipulation functions.
 * This module provides functions to generate a hexagonal grid and manipulate hex tiles.
 */
-
 export const generateHexGrid = generateHexGridRadius
+
+// Function to generate a random color from a predefined palette
+function getRandomColor() {
+  const palette = ['#a7f3d0', '#fde68a', '#bfdbfe', '#fcd34d', '#fca5a5'];
+  return palette[Math.floor(Math.random() * palette.length)];
+}
 
 // Function to generate a hexagonal grid
 export function generateRectangularHexGrid(width, height) {
@@ -38,6 +43,7 @@ export function generateHexGridRadius(radius) {
             r,
             selected: false,
             type: null,
+            color: getRandomColor(), // Assign a random color to each tile
           });
         }
       }
