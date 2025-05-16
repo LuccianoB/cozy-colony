@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import Color from 'color';
-import { generateHexGrid, getHexPoints } from '../utils/hexUtils';
+import { generateHexGrid, getHexPoints, generateNoisyIslandGrid } from '../utils/hexUtils';
 import { TERRAIN_TYPES } from '../utils/terrain';
 import { elevationToGrayscale } from '../utils/color';
 
@@ -9,7 +9,7 @@ const HEX_WIDTH = HEX_SIZE * Math.sqrt(3);
 const HEX_HEIGHT = HEX_SIZE * 2;
 const VIEWBOX_WIDTH = 1000;
 const VIEWBOX_HEIGHT = 1000;
-const HEX_RADIUS = 9;
+const HEX_RADIUS = 25;
 
 export default function HexGrid() {
   const [hoveredTileID, setHoveredTileID] = useState(null);
@@ -19,7 +19,13 @@ export default function HexGrid() {
   const [isDragging, setIsDragging] = useState(false);
   const [lastMouse, setLastMouse] = useState(null);
 
-  const tiles = useMemo(() => generateHexGrid(HEX_RADIUS), []);
+  const tiles = useMemo(() => {
+    return generateNoisyIslandGrid({
+        radius: HEX_RADIUS,
+        noiseScale: 0.12,
+        elevationThreshold: 0.15
+    });
+  }, [HEX_RADIUS]);
 
   const pixelPositions = tiles.map(tile => {
     const x = HEX_WIDTH * (tile.q + tile.r / 2);
