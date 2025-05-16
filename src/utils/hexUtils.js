@@ -26,35 +26,58 @@ export function generateNoisyIslandGrid({
   const tiles = [];
   const noise2D = createNoise2D();
   
-  for (let q = -radius; q <= radius; q++) {
+  // 1: Generate tiles in a hexagonal grid of given radius
+  const coords = [];
+  for(let q = -radius; q <= radius; q++) {
     for (let r = -radius; r <= radius; r++) {
       const s = -q - r;
-      if (Math.abs(s) > radius) continue;
-
-      // 1. Normalize position to a unit distance from center (0,0)
-      const distance = Math.sqrt(q * q + r * r + s * s) / radius;
-
-      // 2. Base noise (controls landforms)
-      const noiseValue = noise2D(q * noiseScale, r * noiseScale);
-      const normalizedNoise = (noiseValue + 1) / 2;
-
-      // 3. Apply falloff near edges (distance 1 → strong dampening)
-      const falloff = Math.pow(1 - distance, 2);  // Square falloff
-      const elevation = normalizedNoise * falloff;
-
-      // 4. Skip low-elevation tiles (simulate ocean)
-      if (elevation < elevationThreshold) continue;
-
-      tiles.push({
-        id: `${q}_${r}`,
-        q,
-        r,
-        elevation,
-        selected: false,
-        tags: [],
-        type: null, // terrain type will be applied later
-      });
+      if (Math.abs(s) <= radius) {
+        coords.push({ q, r});
+      }
     }
+  }
+
+  // 2: compute centroid of the hexagon
+  const avgQ = coords.reduce((sum, t) => sum + t.q, 0) / coords.length;
+  const avgR = coords.reduce((sum, t) => sum + t.r, 0) / coords.length;
+
+  // 3: Determine max distance from centroid to normalize falloff
+  for(const tile of coords) {
+    const dq = tile.q - avgQ;
+    const dr = tile.r - avgR;
+    tile.distanceFromCenter = Math.sqrt(dq * dq + dr * dr);
+  }
+
+  const maxDistance = Math.max(...coords.map(tile => tile.distanceFromCenter));
+
+  // 4: Generate each tiles noise value and apply radial falloff
+  for(const { q, r, distanceFromCenter } of coords) {
+    // Get normalized simplex noise value [-1, 1] -> [0, 1]
+    const baseNoiseValue = (noise2D(q * noiseScale, r * noiseScale) + 1) / 2;
+
+    //Cosine falloff based on distance from centroid
+    const normalizedDist = distanceFromCenter / maxDistance;
+    const fallOff = Math.pow((1 + Math.cos(Math.PI * normalizedDist)) / 2,1.5);
+
+    //final elevation value
+    const boost = 1 - normalizedDist;
+    const elevation = baseNoiseValue * fallOff + 0.1 * boost;
+
+    //Skip tiles below the elevation threshold
+    if (elevation < elevationThreshold) {
+      continue;
+    }
+
+    //push usable tile
+    tiles.push({
+      id: `${q}_${r}`,
+      q,
+      r,
+      elevation,
+      selected: false,
+      type: null, // for future terrain use
+      tags: []
+    });
   }
 
   return tiles;

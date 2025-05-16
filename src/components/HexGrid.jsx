@@ -4,12 +4,12 @@ import { generateHexGrid, getHexPoints, generateNoisyIslandGrid } from '../utils
 import { TERRAIN_TYPES } from '../utils/terrain';
 import { elevationToGrayscale } from '../utils/color';
 
-const HEX_SIZE = 30;
+const HEX_SIZE = 20;
 const HEX_WIDTH = HEX_SIZE * Math.sqrt(3);
 const HEX_HEIGHT = HEX_SIZE * 2;
 const VIEWBOX_WIDTH = 1000;
 const VIEWBOX_HEIGHT = 1000;
-const HEX_RADIUS = 25;
+const HEX_RADIUS = 30;
 
 export default function HexGrid() {
   const [hoveredTileID, setHoveredTileID] = useState(null);
@@ -22,8 +22,8 @@ export default function HexGrid() {
   const tiles = useMemo(() => {
     return generateNoisyIslandGrid({
         radius: HEX_RADIUS,
-        noiseScale: 0.12,
-        elevationThreshold: 0.15
+        noiseScale: 0.07,
+        elevationThreshold: 0.2
     });
   }, [HEX_RADIUS]);
 
