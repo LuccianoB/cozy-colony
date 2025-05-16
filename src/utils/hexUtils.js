@@ -4,6 +4,7 @@
 */
 import { TERRAIN_TYPES } from "./terrain";
 import { createNoise2D } from 'simplex-noise';
+import { applyCoastTag, enforceCoastalElevationRule } from "./rules";
 
 
 export const generateHexGrid = generateHexGridRadius
@@ -55,7 +56,10 @@ export function generateHexGridRadius(radius) {
             type = 'grassland';
           } else if (elevation < 0.6) {
             type = 'forest';
-          } else if (elevation < 0.8) {
+          }
+          else if (elevation < 0.8) {
+            type = 'hills';
+          } else if (elevation < 0.9) {
             type = 'mountain';
           } else {
             type = 'peak';
@@ -67,11 +71,14 @@ export function generateHexGridRadius(radius) {
             r,
             type,
             elevation,
-            selected: false
+            selected: false,
+            tags: []
           });
         }
       }
     }
+    applyCoastTag(tiles);
+    enforceCoastalElevationRule(tiles);
     return tiles;
 }
   

@@ -11,6 +11,10 @@ export const TERRAIN_TYPES = {
       name: 'Forest',
       color: '#104911'
     },
+    hills: {
+        name: 'Hills',
+        color: '#3a5a40'
+    },
     mountain: {
       name: 'Mountain',
       color: '#656D4A'

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import Color from 'color';
 import { generateHexGrid, getHexPoints } from '../utils/hexUtils';
 import { TERRAIN_TYPES } from '../utils/terrain';
+import { elevationToGrayscale } from '../utils/color';
 
 const HEX_SIZE = 30;
 const HEX_WIDTH = HEX_SIZE * Math.sqrt(3);
@@ -85,7 +86,7 @@ export default function HexGrid() {
           const { x, y } = getPixelPosition(tile.q, tile.r);
           const points = getHexPoints(x, y, HEX_SIZE);
           const typeData = TERRAIN_TYPES[tile.type] || {color: '#ccc'};
-          const baseColor = Color(typeData.color);
+          const baseColor = Color(elevationToGrayscale(tile.elevation));
           const fill = tile.id === selectedTileId
             ? baseColor.darken(0.3).hex()
             : tile.id === hoveredTileID
