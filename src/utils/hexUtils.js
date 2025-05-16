@@ -4,10 +4,18 @@
 */
 import { TERRAIN_TYPES } from "./terrain";
 import { createNoise2D } from 'simplex-noise';
+import seedrandom from "seedrandom";
 import { applyCoastTag, enforceCoastalElevationRule } from "./rules";
 
 
 export const generateHexGrid = generateHexGridRadius
+
+function rotateCoordinates(q, r, angleDegrees) {
+  const angle = (Math.PI / 180) * angleDegrees;
+  const x = q * Math.cos(angle) - r * Math.sin(angle);
+  const y = q * Math.sin(angle) + r * Math.cos(angle);
+  return [x, y];
+}
 
 /**
  * Generates a hex grid shaped like a noisy island.
@@ -24,7 +32,11 @@ export function generateNoisyIslandGrid({
   elevationThreshold = 0.3
 } = {}) {
   const tiles = [];
-  const noise2D = createNoise2D();
+  const rotationAngle = Math.random() * 360;
+  const rng = seedrandom(String(Date.now()));
+  const noise2D = createNoise2D(rng);
+  const moistureNoise2D = createNoise2D(rng);
+  const moistureNoiseScale = 0.1; // Adjust this value to change the moisture noise scale
   
   // 1: Generate tiles in a hexagonal grid of given radius
   const coords = [];
@@ -53,7 +65,9 @@ export function generateNoisyIslandGrid({
   // 4: Generate each tiles noise value and apply radial falloff
   for(const { q, r, distanceFromCenter } of coords) {
     // Get normalized simplex noise value [-1, 1] -> [0, 1]
-    const baseNoiseValue = (noise2D(q * noiseScale, r * noiseScale) + 1) / 2;
+    const [rq, rr] = rotateCoordinates(q, r, rotationAngle);
+    const baseNoiseValue = (noise2D(rq * noiseScale, rr * noiseScale) + 1) / 2;
+    const moistureNoiseValue = (moistureNoise2D(q * moistureNoiseScale, r * moistureNoiseScale) + 1) / 2;
 
     //Cosine falloff based on distance from centroid
     const normalizedDist = distanceFromCenter / maxDistance;
@@ -74,6 +88,7 @@ export function generateNoisyIslandGrid({
       q,
       r,
       elevation,
+      moisture: moistureNoiseValue,
       selected: false,
       type: null, // for future terrain use
       tags: []
