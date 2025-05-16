@@ -23,6 +23,28 @@ export function applyCoastTag(tiles) {
     });
 }
 
+/**
+ * Tags tiles as river sources based on elevation and moisture.
+ * A river source is a high elevation, high moisture tile that may initiate flow.
+ *
+ * @param {Array} tiles - Array of tile objects.
+ */
+export function applyRiverSourceTags(tiles) {
+    const ELEVATION_SOURCE_THRESHOLD = 0.7;
+    const MOISTURE_SOURCE_THRESHOLD = 0.6;
+    const RIVER_SOURCE_PROBABILITY = 0.7;
+  
+    for (const tile of tiles) {
+      if (
+        tile.elevation >= ELEVATION_SOURCE_THRESHOLD &&
+        tile.moisture >= MOISTURE_SOURCE_THRESHOLD &&
+        Math.random() < RIVER_SOURCE_PROBABILITY
+      ) {
+        tile.tags.push('river_source');
+      }
+    }
+  }
+
 // Remove mountains/peaks from coastal tiles
 export function enforceCoastalElevationRule(tiles) {
     tiles.forEach(tile => {

@@ -5,7 +5,7 @@
 import { TERRAIN_TYPES } from "./terrain";
 import { createNoise2D } from 'simplex-noise';
 import seedrandom from "seedrandom";
-import { applyCoastTag, enforceCoastalElevationRule } from "./rules";
+import { applyCoastTag, applyRiverSourceTags } from "./rules";
 
 
 export const generateHexGrid = generateHexGridRadius
@@ -94,6 +94,13 @@ export function generateNoisyIslandGrid({
       tags: []
     });
   }
+
+  // 5: Apply tags
+  applyCoastTag(tiles);
+  applyRiverSourceTags(tiles);
+  
+
+
 
   return tiles;
 }
