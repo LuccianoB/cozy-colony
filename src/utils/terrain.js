@@ -52,10 +52,13 @@ export const TERRAIN_TYPES = {
  * @returns {string} - Terrain type key
  */
 export function categorizeTerrain(elevation, moisture, tags= []) {
+  if (elevation < 0.2) {
+    return 'ocean';
+  }
   if (tags.includes('coast')){
     return 'beach';
   }
-  if (elevation < 0.3) {
+  if (elevation < 0.2) {
     return moisture < 0.4 ? 'beach' : 'swamp';
   } else if (elevation < 0.5) {
     if (moisture < 0.4) return 'desert';

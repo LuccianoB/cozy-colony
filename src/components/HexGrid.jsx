@@ -113,7 +113,10 @@ export default function HexGrid() {
                 setSelectedTileId(prev => (prev === tile.id ? null : tile.id))
               }
             >
-              <title>{typeData.name}</title>
+              <title>{typeData.name} 
+                - Elevation: {tile.elevation.toFixed(2)} 
+                - Moisture: {tile.moisture.toFixed(2)}
+              </title>
             </polygon>
           );
         })}

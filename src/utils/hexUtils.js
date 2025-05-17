@@ -75,13 +75,11 @@ export function generateNoisyIslandGrid({
 
     //final elevation value
     const boost = 1 - normalizedDist;
-    const elevation = baseNoiseValue * fallOff + 0.1 * boost;
+    const elevation = Math.max(0,baseNoiseValue * fallOff + 0.1 * boost);
 
     //Skip tiles below the elevation threshold
-    if (elevation < elevationThreshold) {
-      continue;
-    }
-    
+  
+
     //push usable tile
     tiles.push({
       id: `${q}_${r}`,
@@ -101,6 +99,12 @@ export function generateNoisyIslandGrid({
   
   for (const tile of tiles) {
     tile.type = categorizeTerrain(tile.elevation, tile.moisture, tile.tags);
+  }
+
+  for (const tile of tiles) {
+    if (tile.type === 'beach') {
+      console.log(`Beach tile at ${tile.id} -> elevation: ${tile.elevation}`);
+    }
   }
 
   return tiles;

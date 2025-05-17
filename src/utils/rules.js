@@ -1,4 +1,4 @@
-const THRESHOLD = 0.3;
+const THRESHOLD = 0.2;
 
 // Directions for axial hex neighbors (pointy-topped)
 const directions = [
