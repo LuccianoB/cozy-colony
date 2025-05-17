@@ -4,7 +4,7 @@ import { generateHexGrid, getHexPoints, generateNoisyIslandGrid } from '../utils
 import { TERRAIN_TYPES } from '../utils/terrain';
 import { elevationToGrayscale } from '../utils/color';
 
-const HEX_SIZE = 20;
+const HEX_SIZE = 10;
 const HEX_WIDTH = HEX_SIZE * Math.sqrt(3);
 const HEX_HEIGHT = HEX_SIZE * 2;
 const VIEWBOX_WIDTH = 1000;
@@ -91,8 +91,8 @@ export default function HexGrid() {
         {tiles.map(tile => {
           const { x, y } = getPixelPosition(tile.q, tile.r);
           const points = getHexPoints(x, y, HEX_SIZE);
-          const typeData = TERRAIN_TYPES[tile.type] || {color: '#ccc'};
-          const baseColor = Color(elevationToGrayscale(tile.elevation));
+          const typeData = TERRAIN_TYPES[tile.type] || {color: '#ccc', name: 'Unknown'};
+          const baseColor = Color(typeData.color);
           const fill = tile.id === selectedTileId
             ? baseColor.darken(0.3).hex()
             : tile.id === hoveredTileID
@@ -112,7 +112,9 @@ export default function HexGrid() {
               onClick={() =>
                 setSelectedTileId(prev => (prev === tile.id ? null : tile.id))
               }
-            />
+            >
+              <title>{typeData.name}</title>
+            </polygon>
           );
         })}
       </g>

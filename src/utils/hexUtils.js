@@ -2,7 +2,7 @@
 * Hexagonal grid generation and manipulation functions.
 * This module provides functions to generate a hexagonal grid and manipulate hex tiles.
 */
-import { TERRAIN_TYPES } from "./terrain";
+import { categorizeTerrain } from "./terrain";
 import { createNoise2D } from 'simplex-noise';
 import seedrandom from "seedrandom";
 import { applyCoastTag, applyRiverSourceTags } from "./rules";
@@ -82,6 +82,8 @@ export function generateNoisyIslandGrid({
       continue;
     }
 
+    const type = categorizeTerrain(elevation, moistureNoiseValue);
+
     //push usable tile
     tiles.push({
       id: `${q}_${r}`,
@@ -90,7 +92,7 @@ export function generateNoisyIslandGrid({
       elevation,
       moisture: moistureNoiseValue,
       selected: false,
-      type: null, // for future terrain use
+      type: type,
       tags: []
     });
   }
