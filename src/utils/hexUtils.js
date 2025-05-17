@@ -81,9 +81,7 @@ export function generateNoisyIslandGrid({
     if (elevation < elevationThreshold) {
       continue;
     }
-
-    const type = categorizeTerrain(elevation, moistureNoiseValue);
-
+    
     //push usable tile
     tiles.push({
       id: `${q}_${r}`,
@@ -92,7 +90,7 @@ export function generateNoisyIslandGrid({
       elevation,
       moisture: moistureNoiseValue,
       selected: false,
-      type: type,
+      type: null,
       tags: []
     });
   }
@@ -101,8 +99,9 @@ export function generateNoisyIslandGrid({
   applyCoastTag(tiles);
   applyRiverSourceTags(tiles);
   
-
-
+  for (const tile of tiles) {
+    tile.type = categorizeTerrain(tile.elevation, tile.moisture, tile.tags);
+  }
 
   return tiles;
 }

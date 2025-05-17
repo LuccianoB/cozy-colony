@@ -1,3 +1,5 @@
+const THRESHOLD = 0.3;
+
 // Directions for axial hex neighbors (pointy-topped)
 const directions = [
     [+1, 0], [0, +1], [-1, +1],
@@ -14,7 +16,7 @@ export function applyCoastTag(tiles) {
     tiles.forEach(tile => {
       const isCoast = directions.some(([dq, dr]) => {
         const neighbor = tileMap[`${tile.q + dq}_${tile.r + dr}`];
-        return !neighbor || neighbor.type === null;
+        return !neighbor || neighbor.elevation < THRESHOLD;
       });
   
       if (isCoast) {
