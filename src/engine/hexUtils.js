@@ -38,11 +38,12 @@ export function getNeighbors(tile, tileMap) {
 export function generateNoisyIslandGrid({
   radius = 10,
   noiseScale = 0.1,
-  elevationThreshold = 0.3
+  elevationThreshold = 0.3,
+  seed = null
 } = {}) {
+  const rng = seedrandom(seed || String(Date.now()));
   const tiles = [];
   const rotationAngle = Math.random() * 360;
-  const rng = seedrandom(String(Date.now()));
   const noise2D = createNoise2D(rng);
   const moistureNoise2D = createNoise2D(rng);
   const moistureNoiseScale = 0.05; // Adjust this value to change the moisture noise scale

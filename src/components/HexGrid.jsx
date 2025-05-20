@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import Color from 'color';
-import { getHexPoints, generateNoisyIslandGrid } from '../utils/hexUtils';
-import { TERRAIN_TYPES } from '../utils/terrain';
+import { getHexPoints, generateNoisyIslandGrid } from '../engine/hexUtils';
+import { TERRAIN_TYPES } from '../engine/terrain';
 import { elevationToGrayscale } from '../utils/color';
 
 const HEX_SIZE = 10;
@@ -28,25 +28,34 @@ export default function HexGrid() {
   }, [HEX_RADIUS]);
   
 
-  const pixelPositions = tiles.map(tile => {
-    const x = HEX_WIDTH * (tile.q + tile.r / 2);
-    const y = HEX_HEIGHT * (tile.r * 0.75);
-    return { x, y };
-  });
+  const {
+    pixelPositions,
+    offsetX,
+    offsetY,
+  } = useMemo(() => {
+    const pixelPositions = tiles.map(tile => {
+      const x = HEX_WIDTH * (tile.q + tile.r / 2);
+      const y = HEX_HEIGHT * (tile.r * 0.75);
+      return { x, y };
+    });
 
-  // Calculate the bounding box of all pixel positions
-  const minX = Math.min(...pixelPositions.map(p => p.x));
-  const maxX = Math.max(...pixelPositions.map(p => p.x));
-  const minY = Math.min(...pixelPositions.map(p => p.y));
-  const maxY = Math.max(...pixelPositions.map(p => p.y));
+    const minX = Math.min(...pixelPositions.map(p => p.x));
+    const minY = Math.min(...pixelPositions.map(p => p.y));
+    const maxX = Math.max(...pixelPositions.map(p => p.x));
+    const maxY = Math.max(...pixelPositions.map(p => p.y));
 
-// Calculate the width and height of the grid
-  const gridPixelWidth = maxX - minX;
-  const gridPixelHeight = maxY - minY;
+    const gridPixelWidth = maxX - minX;
+    const gridPixelHeight = maxY - minY;
 
-  // Calculate the offset to center the grid in the SVG 
-  const offsetX = (VIEWBOX_WIDTH - gridPixelWidth) / 2 - minX;
-  const offsetY = (VIEWBOX_HEIGHT - gridPixelHeight) / 2 - minY;
+    const offsetX = (VIEWBOX_WIDTH - gridPixelWidth) / 2 - minX;
+    const offsetY = (VIEWBOX_HEIGHT - gridPixelHeight) / 2 - minY;
+
+    return {
+      pixelPositions,
+      offsetX,
+      offsetY,
+    };
+  }, [tiles]);
 
   const getPixelPosition = (q, r) => {
     const x = HEX_WIDTH * (q + r / 2);

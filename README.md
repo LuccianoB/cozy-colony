@@ -37,3 +37,17 @@
 - Seeded randomness via `seedrandom`
 - Color handling via `color` package
 
+## Planned Features
+
+- Improved River flow simulation, potentially involnving degrees of erosion to ensure more important waterways
+
+- Temperature adjustment
+
+- Refactoring to allow for landmasses to be generate based on more a geologically accurate basis
+
+- Implementation of vegetaion and wildlife seedin
+
+## Planned Extension
+
+- Intended yo be basis for future idle civilization simulation
+
