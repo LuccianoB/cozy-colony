@@ -49,7 +49,47 @@ export function applyRiverSourceTags(tiles) {
     }
   }
 
-
+/**
+ * Simulates river flow from each river source tile, tracing downhill.
+ * 
+ * @param {Array} tiles - Array of all tile objects.
+ */
+export function simulateRiverFlow(tiles) {
+    const tileMap = new Map(tiles.map(t => [t.id, t]));
+    const sources = tiles.filter(t => t.tags.includes('river_source'));
+  
+    for (const source of sources) {
+      let current = source;
+  
+      while (true) {
+        const neighbors = getNeighbors(current, tileMap);
+  
+        // Find lowest neighbor
+        const lowest = neighbors.reduce((acc, tile) => {
+          return tile.elevation < acc.elevation ? tile : acc;
+        }, current);
+  
+        // Stop conditions
+        if (
+          lowest === current || // no downhill option
+          lowest.elevation < 0.2 || // reached ocean
+          lowest.tags.includes('river') // avoid reprocessing
+        ) {
+          break;
+        }
+  
+        // Mark current tile as part of the river
+        current.tags.push('river');
+        current.flowsTo = { q: lowest.q, r: lowest.r };
+  
+        current = lowest;
+      }
+  
+      // Final tile (last before stopping)
+      current.tags.push('river_end');
+    }
+  }
+  
 
 // Remove mountains/peaks from coastal tiles
 export function enforceCoastalElevationRule(tiles) {

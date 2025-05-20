@@ -5,7 +5,7 @@
 import { categorizeTerrain } from "./terrain";
 import { createNoise2D } from 'simplex-noise';
 import seedrandom from "seedrandom";
-import { applyCoastTag, applyRiverSourceTags , applyOrographicRainfall} from "./rules";
+import { applyCoastTag, applyRiverSourceTags , applyOrographicRainfall, simulateRiverFlow} from "./rules";
 
 
 function rotateCoordinates(q, r, angleDegrees) {
@@ -107,6 +107,7 @@ export function generateNoisyIslandGrid({
   applyCoastTag(tiles);
   applyOrographicRainfall(tiles, [-1, 0]);
   applyRiverSourceTags(tiles);
+  simulateRiverFlow(tiles);
   
   for (const tile of tiles) {
     tile.type = categorizeTerrain(tile.elevation, tile.moisture, tile.tags);

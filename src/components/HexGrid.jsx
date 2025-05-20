@@ -83,6 +83,18 @@ export default function HexGrid() {
     >
       <defs>
         <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <marker
+            id="arrow"
+            viewBox="0 0 10 10"
+            refX="10"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6" />
+          </marker>
+
           <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#4ade80" />
         </filter>
       </defs>
@@ -105,7 +117,27 @@ export default function HexGrid() {
             strokeWidth = 1.5;
           }
 
+          // Draw river line if this tile flows to another
+          let riverLine = null;
+          if (tile.flowsTo) {
+            const dest = getPixelPosition(tile.flowsTo.q, tile.flowsTo.r);
+            riverLine = (
+              <line
+                x1={x}
+                y1={y}
+                x2={dest.x}
+                y2={dest.y}
+                stroke="#3b82f6"
+                strokeWidth={2}
+                strokeLinecap="round"
+                markerEnd="url(#arrow)"
+              />
+            );
+          }
+
           return (
+            <>
+            {riverLine}
             <polygon
               key={tile.id}
               points={points}
@@ -124,6 +156,7 @@ export default function HexGrid() {
                 - Moisture: {tile.moisture.toFixed(2)}
               </title>
             </polygon>
+            </>
           );
         })}
       </g>
