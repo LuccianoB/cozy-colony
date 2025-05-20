@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import Color from 'color';
-import { generateHexGrid, getHexPoints, generateNoisyIslandGrid } from '../utils/hexUtils';
+import { getHexPoints, generateNoisyIslandGrid } from '../utils/hexUtils';
 import { TERRAIN_TYPES } from '../utils/terrain';
 import { elevationToGrayscale } from '../utils/color';
 
