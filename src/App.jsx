@@ -1,20 +1,24 @@
-import HexGrid from './components/HexGrid';
+// src/App.jsx
 
-function App() {
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import HexGrid from './components/HexGrid';
+import FixedMapDebug from './components/FixedMapDebug';
+
+export default function App() {
   return (
-    <div
-      style={{
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#6faaed'
-      }}
-    >
-      <HexGrid />
-    </div>
+    <Router>
+      <div style={{ padding: '1rem' }}>
+        <nav style={{ marginBottom: '1rem' }}>
+          <Link to="/" style={{ marginRight: '1rem' }}>Main Map</Link>
+          <Link to="/fixed-map">Fixed Test Map</Link>
+        </nav>
+
+        <Routes>
+          <Route path="/" element={<HexGrid />} />
+          <Route path="/fixed-map" element={<FixedMapDebug />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
-export default App;

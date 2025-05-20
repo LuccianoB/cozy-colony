@@ -96,8 +96,8 @@ export default function HexGrid() {
   return (
     <svg
       viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
-      width="100%"
-      height="800"
+      width="100vw"
+      height="calc(100vh - 80px)"
       style={{ display: 'block', cursor: isDragging ? 'grabbing' : 'grab' }}
       preserveAspectRatio="xMidYMid meet"
 
