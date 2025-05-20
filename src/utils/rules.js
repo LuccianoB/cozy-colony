@@ -56,4 +56,31 @@ export function enforceCoastalElevationRule(tiles) {
     });
 }
   
-
+/**
+ * Adjusts tile moisture using a directional wind-based orographic simulation.
+ * Moisture increases when elevation rises in windward direction and decreases on leeward sides.
+ * 
+ * @param {Array} tiles - Array of tile objects.
+ * @param {[number, number]} windDir - Direction the wind is blowing (e.g., [-1, 0] = west → east).
+ */
+export function applyOrographicRainfall(tiles, windDir = [-1, 0]) {
+    const tileMap = new Map(tiles.map(t => [t.id, t]));
+  
+    for (const tile of tiles) {
+      const neighborQ = tile.q + windDir[0];
+      const neighborR = tile.r + windDir[1];
+      const neighbor = tileMap.get(`${neighborQ}_${neighborR}`);
+  
+      if (!neighbor) continue;
+  
+      const elevationDiff = tile.elevation - neighbor.elevation;
+  
+      // Orographic adjustment logic
+      if (elevationDiff > 0.02) {
+        tile.moisture = Math.min(1, tile.moisture + 0.1);
+      } else if (elevationDiff < -0.02) {
+        tile.moisture = Math.max(0, tile.moisture - 0.1);
+      }
+    }
+  }
+  
