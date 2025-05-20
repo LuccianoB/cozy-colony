@@ -67,20 +67,34 @@ export function applyOrographicRainfall(tiles, windDir = [-1, 0]) {
     const tileMap = new Map(tiles.map(t => [t.id, t]));
   
     for (const tile of tiles) {
-      const neighborQ = tile.q + windDir[0];
-      const neighborR = tile.r + windDir[1];
-      const neighbor = tileMap.get(`${neighborQ}_${neighborR}`);
+        const neighborQ = tile.q + windDir[0];
+        const neighborR = tile.r + windDir[1];
+        const neighbor = tileMap.get(`${neighborQ}_${neighborR}`);
   
-      if (!neighbor) continue;
+        if (!neighbor) continue;
   
-      const elevationDiff = tile.elevation - neighbor.elevation;
+        const elevationDiff = tile.elevation - neighbor.elevation;
   
-      // Orographic adjustment logic
-      if (elevationDiff > 0.02) {
-        tile.moisture = Math.min(1, tile.moisture + 0.1);
-      } else if (elevationDiff < -0.02) {
-        tile.moisture = Math.max(0, tile.moisture - 0.1);
-      }
+        // === PARAM 2: Elevation sensitivity threshold ===
+        // Controls how subtle terrain needs to be to count as a slope
+        // If the difference is too small, skip the tile.
+        if (Math.abs(elevationDiff) < 0.02) continue;
+
+        // === PARAM 3 + 4: Moisture adjustment (proportional to elevation difference) ===
+        // Greater elevation change = more intense rain shadow or orographic rainfall.
+        // Max impact is clamped for realism.
+        // Adjust the maxDelta value to control the strength of the rainfall effect.
+        // lower values = more moisture, higher values = less moisture
+        const maxDelta = 0.5; 
+        const delta = Math.min(maxDelta, Math.abs(elevationDiff) * 1.5);
+
+        if (elevationDiff > 0) {
+            // Wind hits slope → air rises → rain increases
+            tile.moisture = Math.min(1, tile.moisture + delta);
+        } else {
+            // Wind goes downhill → dry descending air
+            tile.moisture = Math.max(0, tile.moisture - delta);
+        }
     }
   }
   

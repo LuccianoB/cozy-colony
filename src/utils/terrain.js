@@ -25,7 +25,7 @@ export const TERRAIN_TYPES = {
   },
   rocky_highlands: {
     name: 'Rocky Highlands',
-    color: '#d97706'
+    color: '#945711'
   },
   bare_peak: {
     name: 'Bare Peak',
@@ -37,11 +37,11 @@ export const TERRAIN_TYPES = {
   },
   scrub_hills: {
     name: 'Scrub Hills',
-    color: '#c0cc81'
+    color: '#9daa58'
   },
   dry_mountains: {
     name: 'Dry Mountains',
-    color: '#9ca161'
+    color: '#959871'
   },
   snowy_peak: {
     name: 'Snowy Peak',

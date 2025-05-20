@@ -9,7 +9,7 @@ const HEX_WIDTH = HEX_SIZE * Math.sqrt(3);
 const HEX_HEIGHT = HEX_SIZE * 2;
 const VIEWBOX_WIDTH = 1000;
 const VIEWBOX_HEIGHT = 1000;
-const HEX_RADIUS = 30;
+const HEX_RADIUS = 40;
 
 export default function HexGrid() {
   const [hoveredTileID, setHoveredTileID] = useState(null);
