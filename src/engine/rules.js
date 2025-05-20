@@ -57,42 +57,7 @@ export function applyRiverSourceTags(tiles) {
  * @param {Map} tileMap - Map of tile.id => tile.
  */
 export function simulateRiverFlow(tiles, tileMap) {
-    const visited = new Set();
   
-    const sources = tiles.filter(t => t.tags.includes('river_source'));
-  
-    for (const source of sources) {
-      let current = source;
-  
-      while (true) {
-        const currentId = `${current.q}_${current.r}`;
-        if (visited.has(currentId)) break;
-        visited.add(currentId);
-  
-        const neighbors = getNeighbors(current, tileMap)
-          .filter(n => n.elevation < current.elevation && !n.tags.includes('river'));
-  
-        // Stop if no valid downhill neighbor
-        if (neighbors.length === 0) {
-          current.tags.push('river_end');
-          break;
-        }
-  
-        // Pick the steepest descent
-        const next = neighbors.reduce((lowest, n) => {
-          return n.elevation < lowest.elevation ? n : lowest;
-        }, neighbors[0]);
-  
-        if (!next || visited.has(`${next.q}_${next.r}`)) {
-            current.tags.push('river_end'); // Optional
-            break;
-          }
-        
-        current.tags.push('river');
-        current.flowsTo = { q: next.q, r: next.r };
-        current = next;
-      }
-    }
   }
   
   
