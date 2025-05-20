@@ -57,8 +57,26 @@ export function applyRiverSourceTags(tiles) {
  * @param {Map} tileMap - Map of tile.id => tile.
  */
 export function simulateRiverFlow(tiles, tileMap) {
-  
-  }
+  const riverSources = tiles.filter(tile => tile.tags.includes('river_source'));
+  const source = riverSources[0]; // Get the first river source
+  if(!source) return; // No river sources found
+
+  const neighbors = getNeighbors(source, tileMap);
+  const downhill = neighbors.filter(neighbor => neighbor.elevation < source.elevation);
+
+  if (downhill.length === 0) return; // No downhill neighbors
+
+  const next = downhill.reduce((lowest, t)=> 
+    t.elevation < lowest.elevation ? t : lowest,downhill[0]);
+
+  source.tags.push('river');
+  next.tags.push('river');
+
+  source.flowsTo.push({ q: next.q, r: next.r });
+  next.flowsFrom.push({ q: source.q, r: source.r });
+
+
+}
   
   
 

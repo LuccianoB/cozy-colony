@@ -20,7 +20,8 @@ const makeTile = ({
 const oceanElevation = 0.1;
 
 // 5x5 Grid
-export const tiles = [
+export function generateTestTiles() {
+  const tiles = [
   // Row -2
   makeTile({ q: -2, r: -2, elevation: oceanElevation, moisture: 0.5 }),
   makeTile({ q: -1, r: -2, elevation: oceanElevation, moisture: 0.5 }),
@@ -56,6 +57,7 @@ export const tiles = [
   makeTile({ q:  1, r: 2, elevation: oceanElevation, moisture: 0.5 }),
   makeTile({ q:  2, r: 2, elevation: oceanElevation, moisture: 0.5 }),
 ];
+  const tileMap = new Map(tiles.map(tile => [tile.id, tile]));
+  return { tiles, tileMap };
+}
 
-// Build tileMap for fast lookup
-export const tileMap = new Map(tiles.map(tile => [tile.id, tile]));
