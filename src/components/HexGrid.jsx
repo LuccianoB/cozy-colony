@@ -98,14 +98,20 @@ export default function HexGrid() {
             : tile.id === hoveredTileID
             ? baseColor.lighten(0.3).hex()
             : baseColor.hex();
+          let stroke =  '#888';
+          let strokeWidth = 0.5;
+          if (tile.tags.includes('river_source')) {
+            stroke = '#00f';
+            strokeWidth = 1.5;
+          }
 
           return (
             <polygon
               key={tile.id}
               points={points}
               fill={fill}
-              stroke="#888"
-              strokeWidth={0.5}
+              stroke={stroke}
+              strokeWidth={strokeWidth}
               filter={tile.id === selectedTileId ? 'url(#glow)' : 'none'}
               onMouseEnter={() => setHoveredTileID(tile.id)}
               onMouseLeave={() => setHoveredTileID(null)}

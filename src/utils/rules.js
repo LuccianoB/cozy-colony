@@ -1,4 +1,5 @@
 const THRESHOLD = 0.2;
+import { getNeighbors } from './hexUtils';
 
 // Directions for axial hex neighbors (pointy-topped)
 const directions = [
@@ -33,19 +34,22 @@ export function applyCoastTag(tiles) {
  */
 export function applyRiverSourceTags(tiles) {
     const ELEVATION_SOURCE_THRESHOLD = 0.7;
-    const MOISTURE_SOURCE_THRESHOLD = 0.6;
-    const RIVER_SOURCE_PROBABILITY = 0.7;
+    const MOISTURE_SOURCE_THRESHOLD = 0.8;
   
     for (const tile of tiles) {
       if (
-        tile.elevation >= ELEVATION_SOURCE_THRESHOLD &&
-        tile.moisture >= MOISTURE_SOURCE_THRESHOLD &&
-        Math.random() < RIVER_SOURCE_PROBABILITY
-      ) {
+        (tile.elevation >= ELEVATION_SOURCE_THRESHOLD &&
+        tile.moisture >= MOISTURE_SOURCE_THRESHOLD)||
+        tile.elevation >=0.9 &&
+        !['ocean', 'deep_ocean'].includes(tile.type) && // Exclude ocean tiles
+        !tile.tags.includes('coast') // Exclude coastal tiles
+      ){
         tile.tags.push('river_source');
       }
     }
   }
+
+
 
 // Remove mountains/peaks from coastal tiles
 export function enforceCoastalElevationRule(tiles) {

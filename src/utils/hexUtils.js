@@ -15,6 +15,17 @@ function rotateCoordinates(q, r, angleDegrees) {
   return [x, y];
 }
 
+export function getNeighbors(tile, tileMap) {
+  const directions = [
+    [+1, 0], [0, +1], [-1, +1],
+    [-1, 0], [0, -1], [+1, -1]
+  ];
+  return directions
+    .map(([dq, dr]) => tileMap.get(`${tile.q + dq}_${tile.r + dr}`))
+    .filter(Boolean);
+}
+
+
 /**
  * Generates a hex grid shaped like a noisy island.
  * 
