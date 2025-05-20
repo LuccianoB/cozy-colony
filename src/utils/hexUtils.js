@@ -103,20 +103,22 @@ export function generateNoisyIslandGrid({
     });
   }
 
+  const tilesMap = new Map(tiles.map(t => [t.id, t]));
+
   // 5: Apply tags
   applyCoastTag(tiles);
   applyOrographicRainfall(tiles, [-1, 0]);
   applyRiverSourceTags(tiles);
-  simulateRiverFlow(tiles);
+  simulateRiverFlow(tiles, tilesMap);
+
+  for (const tile of tiles.filter(t => t.tags.includes("river_source"))) {
+    if (!tile.flowsTo) {
+      console.warn(`Source tile ${tile.id} has no flow path`);
+    }
+  }
   
   for (const tile of tiles) {
     tile.type = categorizeTerrain(tile.elevation, tile.moisture, tile.tags);
-  }
-
-  for (const tile of tiles) {
-    if (tile.type === 'beach') {
-      console.log(`Beach tile at ${tile.id} -> elevation: ${tile.elevation}`);
-    }
   }
 
   return tiles;

@@ -50,45 +50,51 @@ export function applyRiverSourceTags(tiles) {
   }
 
 /**
- * Simulates river flow from each river source tile, tracing downhill.
+ * Simulates downhill river flow from each river source.
+ * Adds `river` tag and sets `flowsTo` for each tile in the flow path.
  * 
- * @param {Array} tiles - Array of all tile objects.
+ * @param {Array} tiles - Array of tile objects.
+ * @param {Map} tileMap - Map of tile.id => tile.
  */
-export function simulateRiverFlow(tiles) {
-    const tileMap = new Map(tiles.map(t => [t.id, t]));
+export function simulateRiverFlow(tiles, tileMap) {
+    const visited = new Set();
+  
     const sources = tiles.filter(t => t.tags.includes('river_source'));
   
     for (const source of sources) {
       let current = source;
   
       while (true) {
-        const neighbors = getNeighbors(current, tileMap);
+        const currentId = `${current.q}_${current.r}`;
+        if (visited.has(currentId)) break;
+        visited.add(currentId);
   
-        // Find lowest neighbor
-        const lowest = neighbors.reduce((acc, tile) => {
-          return tile.elevation < acc.elevation ? tile : acc;
-        }, current);
+        const neighbors = getNeighbors(current, tileMap)
+          .filter(n => n.elevation < current.elevation && !n.tags.includes('river'));
   
-        // Stop conditions
-        if (
-          lowest === current || // no downhill option
-          lowest.elevation < 0.2 || // reached ocean
-          lowest.tags.includes('river') // avoid reprocessing
-        ) {
+        // Stop if no valid downhill neighbor
+        if (neighbors.length === 0) {
+          current.tags.push('river_end');
           break;
         }
   
-        // Mark current tile as part of the river
+        // Pick the steepest descent
+        const next = neighbors.reduce((lowest, n) => {
+          return n.elevation < lowest.elevation ? n : lowest;
+        }, neighbors[0]);
+  
+        if (!next || visited.has(`${next.q}_${next.r}`)) {
+            current.tags.push('river_end'); // Optional
+            break;
+          }
+        
         current.tags.push('river');
-        current.flowsTo = { q: lowest.q, r: lowest.r };
-  
-        current = lowest;
+        current.flowsTo = { q: next.q, r: next.r };
+        current = next;
       }
-  
-      // Final tile (last before stopping)
-      current.tags.push('river_end');
     }
   }
+  
   
 
 // Remove mountains/peaks from coastal tiles
