@@ -1,15 +1,19 @@
 import { useState } from 'react';
 import Color from 'color';
-import { tiles as fixedTiles, tileMap } from '../../tests/testMaps/fixedRiverMap';
+import { generateTestTiles } from '../../tests/testMaps/fixedRiverMap';
 import { getHexPoints } from '../engine/hexUtils';
 import { categorizeTerrain, TERRAIN_TYPES } from '../engine/terrain';
 import { elevationToGrayscale } from '../utils/color';
+import { simulateRiverFlow } from '../engine/rules';
 
+const {tiles: fixedTiles, tileMap: fixedTileMap} = generateTestTiles();
+simulateRiverFlow(fixedTiles, fixedTileMap);
 const HEX_SIZE = 30;
 const HEX_WIDTH = HEX_SIZE * Math.sqrt(3);
 const HEX_HEIGHT = HEX_SIZE * 2;
 const VIEWBOX_WIDTH = 800;
 const VIEWBOX_HEIGHT = 600;
+
 
 export default function FixedMapDebug() {
   const [useTerrainColor, setUseTerrainColor] = useState(false);
@@ -34,6 +38,31 @@ export default function FixedMapDebug() {
     const y = HEX_HEIGHT * (r * 0.75) + offsetY;
     return { x, y };
   };
+
+  const riverPaths = [];
+
+  for (const tile of fixedTiles){
+    if(tile.flowsTo.length > 0){
+      const start = getPixelPosition(tile.q, tile.r);
+
+      for (const { q, r } of tile.flowsTo) {
+        const end = getPixelPosition(q, r);
+        console.log(`Drawing river from ${tile.q}_${tile.r} (${start.x}, ${start.y}) to ${q}_${r} (${end.x}, ${end.y})`);
+        riverPaths.push([start, end]);
+      }
+    }
+  }
+
+  console.log(
+    "River arrow lines:",
+    fixedTiles
+      .filter(t => t.flowsTo?.length > 0)
+      .map(t => ({
+        from: t.id,
+        to: t.flowsTo.map(f => `${f.q}_${f.r}`),
+      }))
+  );
+
 
   return (
     <div style={{ textAlign: 'center' }}>
@@ -68,6 +97,38 @@ export default function FixedMapDebug() {
           </marker>
         </defs>
 
+        {/* Hex tiles */}
+        {pixelPositions.map(tile => {
+          const { x, y } = getPixelPosition(tile.q, tile.r);
+          const points = getHexPoints(x, y, HEX_SIZE);
+
+          const type = categorizeTerrain(tile.elevation, tile.moisture, tile.tags);
+          const baseColor = useTerrainColor
+            ? Color(TERRAIN_TYPES[type]?.color || '#ccc')
+            : Color(elevationToGrayscale(tile.elevation));
+
+          const fill = baseColor.hex();
+
+          return (
+            <polygon
+              key={tile.id}
+              points={points}
+              fill={fill}
+              stroke={tile.tags.includes('river_source') ? '#000FFF' : '#444'} // goldenrod or similar
+              strokeWidth={tile.tags.includes('river_source') ? 4 : 0.5}
+            >
+              <title>
+                ID: {tile.id}
+                {'\n'}Type: {type}
+                {'\n'}Elevation: {tile.elevation}
+                {'\n'}Moisture: {tile.moisture}
+                {'\n'}FlowRate: {tile.flowRate ?? 'N/A'}
+                {'\n'}RiverPathId: {tile.riverPathId ?? 'N/A'}
+              </title>
+            </polygon>
+          );
+        })}
+
         {/* Arrows for river flows */}
         {fixedTiles
           .filter(tile => tile.flowsTo?.length)
@@ -89,40 +150,6 @@ export default function FixedMapDebug() {
               );
             });
           })}
-
-        {/* Hex tiles */}
-        {pixelPositions.map(tile => {
-          const { x, y } = getPixelPosition(tile.q, tile.r);
-          const points = getHexPoints(x, y, HEX_SIZE);
-
-          const type = categorizeTerrain(tile.elevation, tile.moisture, tile.tags);
-          const baseColor = useTerrainColor
-            ? Color(TERRAIN_TYPES[type]?.color || '#ccc')
-            : Color(elevationToGrayscale(tile.elevation));
-
-          const fill = tile.tags.includes('river_source')
-            ? baseColor.darken(0.3).hex()
-            : baseColor.hex();
-
-          return (
-            <polygon
-              key={tile.id}
-              points={points}
-              fill={fill}
-              stroke={tile.tags.includes('river') ? '#3b82f6' : '#444'}
-              strokeWidth={tile.tags.includes('river') ? 1.5 : 0.5}
-            >
-              <title>
-                ID: {tile.id}
-                {'\n'}Type: {type}
-                {'\n'}Elevation: {tile.elevation}
-                {'\n'}Moisture: {tile.moisture}
-                {'\n'}FlowRate: {tile.flowRate ?? 'N/A'}
-                {'\n'}RiverPathId: {tile.riverPathId ?? 'N/A'}
-              </title>
-            </polygon>
-          );
-        })}
       </svg>
     </div>
   );

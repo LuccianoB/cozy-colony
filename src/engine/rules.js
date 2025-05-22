@@ -58,24 +58,31 @@ export function applyRiverSourceTags(tiles) {
  */
 export function simulateRiverFlow(tiles, tileMap) {
   const riverSources = tiles.filter(tile => tile.tags.includes('river_source'));
-  const source = riverSources[0]; // Get the first river source
-  if(!source) return; // No river sources found
 
-  const neighbors = getNeighbors(source, tileMap);
-  const downhill = neighbors.filter(neighbor => neighbor.elevation < source.elevation);
+  for (const source of riverSources) {
+    let current = source;
+    source.flowRate = 1; 
+    const seen = new Set();
 
-  if (downhill.length === 0) return; // No downhill neighbors
+    while (true){
+      seen.add(current.id);
+      current.tags.push('river');
 
-  const next = downhill.reduce((lowest, t)=> 
-    t.elevation < lowest.elevation ? t : lowest,downhill[0]);
+      const neighbors = getNeighbors(current, tileMap)
+        .filter(n => n.elevation < current.elevation && !seen.has(n.id));
 
-  source.tags.push('river');
-  next.tags.push('river');
+      if (neighbors.length === 0) break; // No downhill neighbors
 
-  source.flowsTo.push({ q: next.q, r: next.r });
-  next.flowsFrom.push({ q: source.q, r: source.r });
+      // Find the neighbor with the lowest elevation
+      const next = neighbors.reduce((lowest, t)=> 
+        t.elevation < lowest.elevation ? t : lowest,neighbors[0]);
 
+      current.flowsTo.push({ q: next.q, r: next.r });
+      next.flowsFrom.push({ q: current.q, r: current.r });
 
+      current = next;
+    }
+  }
 }
   
   

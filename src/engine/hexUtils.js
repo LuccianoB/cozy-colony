@@ -100,7 +100,14 @@ export function generateNoisyIslandGrid({
       moisture: moistureNoiseValue,
       selected: false,
       type: null,
-      tags: []
+      tags: [],
+      flowsTo: [],
+      flowsFrom: [],
+      flowRate: 0,
+      riverPathId: null,
+      parentRiverId: null,
+      riverOrder: null,
+      mergeCount: 0
     });
   }
 

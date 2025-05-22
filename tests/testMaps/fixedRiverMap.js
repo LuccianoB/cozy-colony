@@ -1,63 +1,63 @@
-// /tests/testMaps/fixedRiverMap.js
-
-const makeTile = ({
-  q, r, elevation, moisture, tags = []
-}) => ({
-  id: `${q}_${r}`, q, r,
-  elevation,
-  moisture,
-  tags,
-  flowsTo: [],
-  flowsFrom: [],
-  flowRate: 0,
-  riverPathId: null,
-  parentRiverId: null,
-  riverOrder: null,
-  mergeCount: 0
-});
-
-// Ocean elevation
-const oceanElevation = 0.1;
-
-// 5x5 Grid
 export function generateTestTiles() {
+  const makeTile = ({ q, r, elevation, moisture, tags = [] }) => ({
+    id: `${q}_${r}`, q, r,
+    elevation,
+    moisture,
+    tags,
+    flowsTo: [],
+    flowsFrom: [],
+    flowRate: 0,
+    riverPathId: null,
+    parentRiverId: null,
+    riverOrder: null,
+    mergeCount: 0
+  });
+
+  const ocean = 0.1;
+  const peak = 0.9;
+  const high = 0.7;
+  const mid = 0.6;
+  const low = 0.5;
+  const lower = 0.4;
+  const lowest = 0.3;
+
   const tiles = [
-  // Row -2
-  makeTile({ q: -2, r: -2, elevation: oceanElevation, moisture: 0.5 }),
-  makeTile({ q: -1, r: -2, elevation: oceanElevation, moisture: 0.5 }),
-  makeTile({ q:  0, r: -2, elevation: oceanElevation, moisture: 0.5 }),
-  makeTile({ q:  1, r: -2, elevation: oceanElevation, moisture: 0.5 }),
-  makeTile({ q:  2, r: -2, elevation: oceanElevation, moisture: 0.5 }),
+    // Row -2
+    makeTile({ q: -2, r: -2, elevation: high, moisture: 0.3 }),
+    makeTile({ q: -1, r: -2, elevation: high, moisture: 0.3 }),
+    makeTile({ q:  0, r: -2, elevation: high, moisture: 0.5 }),
+    makeTile({ q:  1, r: -2, elevation: peak, moisture: 0.3, tags: ['river_source'] }), // Source A
+    makeTile({ q:  2, r: -2, elevation: high, moisture: 0.3 }),
 
-  // Row -1
-  makeTile({ q: -2, r: -1, elevation: oceanElevation, moisture: 0.5 }),
-  makeTile({ q: -1, r: -1, elevation: 0.3, moisture: 0.2 }), // A
-  makeTile({ q:  0, r: -1, elevation: 0.9, moisture: 0.9, tags: ['river_source'] }), // B
-  makeTile({ q:  1, r: -1, elevation: 0.3, moisture: 0.2 }), // C
-  makeTile({ q:  2, r: -1, elevation: oceanElevation, moisture: 0.5 }),
+    // Row -1
+    makeTile({ q: -2, r: -1, elevation: high, moisture: 0.3 }),
+    makeTile({ q: -1, r: -1, elevation: peak, moisture: 0.9, tags: ['river_source'] }), // Source B
+    makeTile({ q:  0, r: -1, elevation: high, moisture: 0.6 }),
+    makeTile({ q:  1, r: -1, elevation: mid, moisture: 0.9 }),
+    makeTile({ q:  2, r: -1, elevation: mid, moisture: 0.3 }),
 
-  // Row 0
-  makeTile({ q: -2, r: 0, elevation: oceanElevation, moisture: 0.5 }),
-  makeTile({ q: -1, r: 0, elevation: 0.4, moisture: 0.3 }), // D
-  makeTile({ q:  0, r: 0, elevation: 0.8, moisture: 0.5 }), // E
-  makeTile({ q:  1, r: 0, elevation: 0.7, moisture: 0.4 }), // F
-  makeTile({ q:  2, r: 0, elevation: oceanElevation, moisture: 0.5 }),
+    // Row 0
+    makeTile({ q: -2, r: 0, elevation: low, moisture: 0.3 }),
+    makeTile({ q: -1, r: 0, elevation: lower, moisture: 0.5 }),
+    makeTile({ q:  0, r: 0, elevation: lower, moisture: 0.5 }), // merge point
+    makeTile({ q:  1, r: 0, elevation: low, moisture: 0.5 }),
+    makeTile({ q:  2, r: 0, elevation: mid, moisture: 0.3 }),
 
-  // Row 1
-  makeTile({ q: -2, r: 1, elevation: oceanElevation, moisture: 0.5 }),
-  makeTile({ q: -1, r: 1, elevation: 0.4, moisture: 0.3 }), // G
-  makeTile({ q:  0, r: 1, elevation: 0.7, moisture: 0.6 }), // H
-  makeTile({ q:  1, r: 1, elevation: 0.6, moisture: 0.4 }), // I
-  makeTile({ q:  2, r: 1, elevation: oceanElevation, moisture: 0.5 }),
+    // Row 1
+    makeTile({ q: -2, r: 1, elevation: mid, moisture: 0.3 }),
+    makeTile({ q: -1, r: 1, elevation: lowest, moisture: 0.5 }),
+    makeTile({ q:  0, r: 1, elevation: lower, moisture: 0.5 }),
+    makeTile({ q:  1, r: 1, elevation: high, moisture: 0.5 }),
+    makeTile({ q:  2, r: 1, elevation: lowest, moisture: 0.3 }),
 
-  // Row 2
-  makeTile({ q: -2, r: 2, elevation: oceanElevation, moisture: 0.5 }),
-  makeTile({ q: -1, r: 2, elevation: oceanElevation, moisture: 0.5 }),
-  makeTile({ q:  0, r: 2, elevation: oceanElevation, moisture: 0.5 }),
-  makeTile({ q:  1, r: 2, elevation: oceanElevation, moisture: 0.5 }),
-  makeTile({ q:  2, r: 2, elevation: oceanElevation, moisture: 0.5 }),
-];
+    // Row 2
+    makeTile({ q: -2, r: 2, elevation: ocean, moisture: 0.5 }),
+    makeTile({ q: -1, r: 2, elevation: ocean, moisture: 0.5 }),
+    makeTile({ q:  0, r: 2, elevation: ocean, moisture: 0.5 }),
+    makeTile({ q:  1, r: 2, elevation: ocean, moisture: 0.5 }),
+    makeTile({ q:  2, r: 2, elevation: ocean, moisture: 0.5 }),
+  ];
+
   const tileMap = new Map(tiles.map(tile => [tile.id, tile]));
   return { tiles, tileMap };
 }
-
